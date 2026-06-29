@@ -116,7 +116,7 @@
   <h1 style="font-size:1.9em;">Make a Wish 🌠</h1>
   <div class="roses">🌹🌹🌹</div>
   <p class="sub">Close your eyes, make it a big one — and here's to a year that gives you every rose you wished for.</p>
-  <p class="sub" style="margin-top:6px; font-size:.95em; color:#9fffe9;">🎵 now playing: I Wish You Roses — Kali Uchis</p>
+  <p class="sub" style="margin-top:6px; font-size:.95em; color:#9fffe9;">🎵 I Wish You Roses — Kali Uchis</p>
   <button class="glow-btn" onclick="burstConfetti(80)">Celebrate 🎉</button>
   <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot on"></div></div>
 </div>
@@ -124,7 +124,9 @@
 <div id="music-wrap">
   <button class="music-toggle" id="musicBtn" onclick="toggleMusic()">🔇</button>
 </div>
-<div id="ytplayer"></div>
+<audio id="bgAudio" loop preload="auto">
+  <source src="Kali_Uchis_-_I_Wish_you_Roses__Official_Music_Video_.mp3" type="audio/mpeg">
+</audio>
 
 <script>
 // ---------- screen nav ----------
@@ -189,28 +191,16 @@ loop();
 burstConfetti(40);
 setInterval(()=>burstConfetti(8), 2500);
 
-// ---------- YouTube music ----------
-let player, musicOn=false, ytReady=false;
-const tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api";
-document.body.appendChild(tag);
-
-function onYouTubeIframeAPIReady(){
-  player = new YT.Player('ytplayer', {
-    height:'1', width:'1', videoId:'-Y7zc0eO26k',
-    playerVars:{ autoplay:0, controls:0, loop:1, playlist:'-Y7zc0eO26k' },
-    events:{ 'onReady': ()=>{ ytReady=true; } }
-  });
-}
+// ---------- local audio ----------
+const audio = document.getElementById('bgAudio');
+let musicOn = false;
 function toggleMusic(){
-  if(!ytReady) return;
   const btn = document.getElementById('musicBtn');
-  if(musicOn){ player.pauseVideo(); btn.textContent='🔇'; }
-  else { player.playVideo(); btn.textContent='🔊'; }
+  if(musicOn){ audio.pause(); btn.textContent='🔇'; }
+  else { audio.play().catch(()=>{}); btn.textContent='🔊'; }
   musicOn = !musicOn;
 }
 </script>
 
 </body>
-    </html>
-
+</html>
