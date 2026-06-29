@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Tee 🎉</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #0a0014;
+    color: #fff;
+    overflow-x: hidden;
+    height: 100vh;
+  }
+  #bg-canvas {
+    position: fixed; top:0; left:0; width:100%; height:100%;
+    z-index: 0; pointer-events:none;
+  }
+  .screen {
+    position: fixed; top:0; left:0; width:100%; height:100%;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:30px;
+    opacity:0; visibility:hidden; transition: opacity .6s ease;
+    z-index: 2;
+  }
+  .screen.active { opacity:1; visibility:visible; }
+
+  h1 {
+    font-size: 2.4em;
+    background: linear-gradient(90deg,#ff2bd6,#00f0ff,#ffe600,#ff2bd6);
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shine 4s linear infinite, pop .8s ease;
+    text-shadow: 0 0 30px rgba(255,43,214,.5);
+  }
+  @keyframes shine { to { background-position: 300% center; } }
+  @keyframes pop { 0%{transform:scale(.5);opacity:0;} 60%{transform:scale(1.1);} 100%{transform:scale(1);opacity:1;} }
+
+  p.sub { margin-top:14px; font-size:1.1em; color:#ffd6f5; max-width:340px; line-height:1.5; animation: fadeUp 1s ease .3s both; }
+  @keyframes fadeUp { from{opacity:0; transform:translateY(15px);} to{opacity:1; transform:translateY(0);} }
+
+  .glow-btn {
+    margin-top:36px; padding:14px 34px; border:none; border-radius:50px;
+    background: linear-gradient(90deg,#ff2bd6,#00f0ff);
+    color:#fff; font-size:1.05em; font-weight:bold; cursor:pointer;
+    box-shadow: 0 0 20px rgba(255,43,214,.7), 0 0 40px rgba(0,240,255,.4);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.06);} }
+  .glow-btn:active { transform: scale(.95); }
+
+  .msg-card {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.2);
+    backdrop-filter: blur(14px);
+    border-radius: 24px;
+    padding: 28px 24px;
+    max-width: 360px;
+    box-shadow: 0 0 40px rgba(255,43,214,.25);
+    animation: fadeUp 1s ease both;
+  }
+  .msg-card p { font-size:1.05em; line-height:1.7; color:#fceaff; }
+  .msg-card .signoff { margin-top:18px; font-style:italic; color:#00f0ff; font-weight:bold; }
+
+  .heart { position:absolute; font-size:1.5em; animation: floatUp linear forwards; opacity:.85; }
+  @keyframes floatUp {
+    0% { transform: translateY(0) rotate(0); opacity:.9; }
+    100% { transform: translateY(-100vh) rotate(360deg); opacity:0; }
+  }
+
+  .roses { font-size:2.5em; margin-top:10px; animation: sway 3s ease-in-out infinite; }
+  @keyframes sway { 0%,100%{transform:rotate(-6deg);} 50%{transform:rotate(6deg);} }
+
+  #music-wrap { position:fixed; bottom:14px; right:14px; z-index:5; opacity:.85; }
+  #ytplayer { width:1px; height:1px; opacity:0; position:absolute; }
+  .music-toggle {
+    width:46px; height:46px; border-radius:50%;
+    background: rgba(255,43,214,.25); border:1px solid rgba(255,255,255,.4);
+    color:#fff; font-size:1.3em; cursor:pointer; backdrop-filter: blur(6px);
+  }
+
+  .dots { display:flex; gap:8px; margin-top:30px; }
+  .dot { width:9px; height:9px; border-radius:50%; background:rgba(255,255,255,.3); }
+  .dot.on { background:#ff2bd6; box-shadow:0 0 10px #ff2bd6; }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- WELCOME -->
+<div class="screen active" id="screen-welcome">
+  <h1>Happy Birthday,<br>Trizah! 🎂</h1>
+  <p class="sub">aka Tee ✨ — today the whole world celebrates you. Tap below, I made you something.</p>
+  <button class="glow-btn" onclick="goTo('message')">Open your gift 🎁</button>
+  <div class="dots"><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div>
+</div>
+
+<!-- MESSAGE -->
+<div class="screen" id="screen-message">
+  <h1 style="font-size:1.8em;">For You, Tee 💌</h1>
+  <div class="msg-card">
+    <p>However we know each other — through the laughs, the random conversations, and everything in between — you've made it count. You bring a kind of energy that's hard to find: real, warm, and genuinely you.</p>
+    <p style="margin-top:14px;">So today isn't just another birthday. It's a celebration of every bit of good you put out into the world, whether you notice it or not.</p>
+    <p class="signoff">Keep shining, Tee. 🌟</p>
+  </div>
+  <button class="glow-btn" onclick="goTo('wish')">Make a wish ➝</button>
+  <div class="dots"><div class="dot"></div><div class="dot on"></div><div class="dot"></div></div>
+</div>
+
+<!-- WISH -->
+<div class="screen" id="screen-wish">
+  <h1 style="font-size:1.9em;">Make a Wish 🌠</h1>
+  <div class="roses">🌹🌹🌹</div>
+  <p class="sub">Close your eyes, make it a big one — and here's to a year that gives you every rose you wished for.</p>
+  <p class="sub" style="margin-top:6px; font-size:.95em; color:#9fffe9;">🎵 now playing: I Wish You Roses — Kali Uchis</p>
+  <button class="glow-btn" onclick="burstConfetti(80)">Celebrate 🎉</button>
+  <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot on"></div></div>
+</div>
+
+<div id="music-wrap">
+  <button class="music-toggle" id="musicBtn" onclick="toggleMusic()">🔇</button>
+</div>
+<div id="ytplayer"></div>
+
+<script>
+// ---------- screen nav ----------
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  if(id==='wish') burstConfetti(120);
+}
+
+// ---------- floating hearts ----------
+function spawnHeart(){
+  const h = document.createElement('div');
+  h.className='heart';
+  h.textContent = ['💖','💫','✨','🎈','💕'][Math.floor(Math.random()*5)];
+  h.style.left = Math.random()*100+'vw';
+  h.style.bottom = '-30px';
+  h.style.animationDuration = (4+Math.random()*4)+'s';
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(), 9000);
+}
+setInterval(spawnHeart, 700);
+
+// ---------- canvas confetti ----------
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+function resize(){ canvas.width=innerWidth; canvas.height=innerHeight; }
+resize(); window.addEventListener('resize', resize);
+
+let particles = [];
+const colors = ['#ff2bd6','#00f0ff','#ffe600','#ff6ec7','#a200ff'];
+
+function burstConfetti(n){
+  for(let i=0;i<n;i++){
+    particles.push({
+      x: Math.random()*canvas.width,
+      y: -20 - Math.random()*100,
+      r: 4+Math.random()*5,
+      c: colors[Math.floor(Math.random()*colors.length)],
+      vy: 2+Math.random()*3,
+      vx: -1.5+Math.random()*3,
+      rot: Math.random()*360,
+      vr: -6+Math.random()*12
+    });
+  }
+}
+function loop(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
+    p.y+=p.vy; p.x+=p.vx; p.rot+=p.vr;
+    ctx.save();
+    ctx.translate(p.x,p.y);
+    ctx.rotate(p.rot*Math.PI/180);
+    ctx.fillStyle=p.c;
+    ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*1.6);
+    ctx.restore();
+  });
+  particles = particles.filter(p=>p.y < canvas.height+30);
+  requestAnimationFrame(loop);
+}
+loop();
+// gentle ambient confetti on welcome
+burstConfetti(40);
+setInterval(()=>burstConfetti(8), 2500);
+
+// ---------- YouTube music ----------
+let player, musicOn=false, ytReady=false;
+const tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+document.body.appendChild(tag);
+
+function onYouTubeIframeAPIReady(){
+  player = new YT.Player('ytplayer', {
+    height:'1', width:'1', videoId:'-Y7zc0eO26k',
+    playerVars:{ autoplay:0, controls:0, loop:1, playlist:'-Y7zc0eO26k' },
+    events:{ 'onReady': ()=>{ ytReady=true; } }
+  });
+}
+function toggleMusic(){
+  if(!ytReady) return;
+  const btn = document.getElementById('musicBtn');
+  if(musicOn){ player.pauseVideo(); btn.textContent='🔇'; }
+  else { player.playVideo(); btn.textContent='🔊'; }
+  musicOn = !musicOn;
+}
+</script>
+
+</body>
+    </html>
+
